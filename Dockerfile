@@ -1,5 +1,7 @@
 FROM debian:jessie
 
+RUN sed -i 's/main/main contrib non-free/' /etc/apt/sources.list
+
 RUN apt-get update && apt-get -y install  unzip \
                         xz-utils \
                         curl \
@@ -19,6 +21,17 @@ RUN apt-get update && apt-get -y install  unzip \
                         pkg-config \
                         p7zip-full
 
+RUN apt-get -y install firmware-atheros \
+						firmware-ralink \
+						firmware-brcm80211 \
+						firmware-libertas \
+						firmware-realtek \
+						firmware-samsung \
+						firmware-iwlwifi \
+						firmware-linux \
+						firmware-linux-nonfree \
+						firmware-linux-free
+						
 # https://www.kernel.org/
 ENV KERNEL_VERSION  4.4.66
 
@@ -81,10 +94,7 @@ RUN cd $ROOTFS/lib/modules && \
     rm -rf ./*/kernel/drivers/media/* && \
     rm -rf ./*/kernel/drivers/staging/lustre/* && \
     rm -rf ./*/kernel/drivers/staging/comedi/* && \
-    rm -rf ./*/kernel/fs/ocfs2/* && \
-    rm -rf ./*/kernel/net/bluetooth/* && \
-    rm -rf ./*/kernel/net/mac80211/* && \
-    rm -rf ./*/kernel/net/wireless/*
+    rm -rf ./*/kernel/fs/ocfs2/*
 
 # Install libcap
 RUN curl -fL http://http.debian.net/debian/pool/main/libc/libcap2/libcap2_2.22.orig.tar.gz | tar -C / -xz && \
@@ -130,7 +140,22 @@ ENV TCZ_DEPS        iptables \
                     procps glib2 libtirpc libffi fuse pcre \
                     udev-lib udev-extra \
                     liblvm2 \
-                    parted
+                    parted \
+					usb-utils libusb libusb-compat libpci \
+					bluetooth-4.2.9-tinycore64 libbluetooth \
+					libpcap \
+					iw libiw libnl \
+					wireless-4.2.9-tinycore64 wl-modules-4.2.9-tinycore64 wifi \
+					wpa_supplicant wpa_supplicant-dbus \
+					wireless_tools rfkill \
+					squashfs-tools compiletc \
+					ndiswrapper ndiswrapper-modules-4.2.9-tinycore64 \
+					firmware firmware-atheros firmware-ralinkwifi \
+					firmware-broadcom_bcm43xx firmware-broadcom_bnx2 \
+					firmware-intel firmware-iwlwifi firmware_iwlwifi-7260 \
+					firmware-iwl8000 firmware-libertas \
+					firmware-ipw2100 firmware-ipw2200 \
+					firmware-rtlwifi firmware-rtl_bt					
 
 # Download the rootfs, don't unpack it though:
 RUN curl -fL -o /tcl_rootfs.gz $TCL_REPO_BASE/release/distribution_files/rootfs64.gz
